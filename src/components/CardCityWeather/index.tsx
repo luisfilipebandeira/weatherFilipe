@@ -33,10 +33,6 @@ export function CardCityWeather({
     maxTemp, minTemp, icon
   }: Props){
 
-  const kelvinToCelsius = (kelvin: number) => {
-    return (kelvin - 273.15).toFixed(2)
-  }
-
   return (
     <Container>
       <InfoView>
@@ -51,10 +47,10 @@ export function CardCityWeather({
       </InfoView>
 
       <TempInfoView>
-        <MainTemp>{kelvinToCelsius(mainTemp)}°</MainTemp>
+        <MainTemp>{mainTemp}°</MainTemp>
         <MaxAndMinTemp>
-          <MaxTemp>Máx: {kelvinToCelsius(maxTemp)}°</MaxTemp>
-          <MinTemp>Min: {kelvinToCelsius(minTemp)}°</MinTemp>
+          <MaxTemp>Máx: {maxTemp}°</MaxTemp>
+          <MinTemp>Min: {minTemp}°</MinTemp>
         </MaxAndMinTemp>
       </TempInfoView>
     </Container>

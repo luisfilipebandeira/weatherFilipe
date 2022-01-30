@@ -1,14 +1,21 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import produce from 'immer';
 
 import { CityWeatherDTO } from '../dtos/cityWeatherDTO'
-import produce from 'immer';
 import { GetWeatherOneCity } from '../services/getWeatherOneCity';
+import { GetWeatherWeek } from '../services/getWeatherWeek';
+import { CityWeatherWeekDTO } from '../dtos/cityWeatherWeekDTO';
 
 interface CityContextData {
   cities: CityWeatherDTO[]
   addCityToList(newCityInfo: CityWeatherDTO): void
   populateContext(): void
+  currentCityWeekWeather: CityWeatherWeekDTO | undefined
+  getWeatherCityDetail(item: CityWeatherDTO): void
+  currentCity: CityWeatherDTO | undefined,
+  removeCityFromList(cityInfo: CityWeatherDTO): void
+  clearData(): void
 }
 
 interface ProviderProps {
@@ -20,6 +27,9 @@ const CityContext = createContext<CityContextData>({} as CityContextData)
 export const CityProvider = ({children}: ProviderProps) => {
   const [cities, setCities] = useState<CityWeatherDTO[]>([])
   const [listOfCities, setListOfCities] = useState([])
+  
+  const [currentCityWeekWeather, setCurrentCityWeekWeather] = useState<CityWeatherWeekDTO | undefined>()
+  const [currentCity, setCurrentCity] = useState<CityWeatherDTO>()
 
   async function populateContext() {
     setListOfCities([])
@@ -42,7 +52,6 @@ export const CityProvider = ({children}: ProviderProps) => {
   }
 
   async function addCityToList(newCityInfo: CityWeatherDTO) {
-    console.log(newCityInfo.name)
     if(newCityInfo !== null) {
       await AsyncStorage.setItem('@cityWeather', JSON.stringify([...listOfCities, newCityInfo.name]))
       setCities(
@@ -52,12 +61,35 @@ export const CityProvider = ({children}: ProviderProps) => {
     }
   }
 
+  async function removeCityFromList(cityInfo: CityWeatherDTO) {
+    if(cityInfo !== null) {
+      const newList = listOfCities.filter((item) => item !== cityInfo.name)
+      await AsyncStorage.setItem('@cityWeather', JSON.stringify(newList))
+    }
+  }
+
+  async function getWeatherCityDetail(item: CityWeatherDTO) {
+    const response = await GetWeatherWeek({lat: item.coord.lat, lon: item.coord.lon})
+    setCurrentCityWeekWeather(response)
+    setCurrentCity(item)
+  }
+
+  function clearData() {
+    setCurrentCityWeekWeather(undefined)
+    setCurrentCity(undefined)
+  }
+
   return (
     <CityContext.Provider 
       value={{
         cities,
         addCityToList,
-        populateContext
+        populateContext,
+        currentCityWeekWeather,
+        getWeatherCityDetail,
+        currentCity,
+        removeCityFromList,
+        clearData
       }}
     >
       {children}

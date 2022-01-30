@@ -8,6 +8,11 @@ import { NavigationContainer } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 
+export type AppStackParamList = {
+  Home: undefined
+  WeatherDetail: undefined
+};
+
 export default function AppRoutes() {
   return (
     <NavigationContainer>

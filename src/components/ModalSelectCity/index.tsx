@@ -3,7 +3,6 @@ import React from 'react'
 import { Modal, TouchableOpacity, Image, Text, View } from 'react-native'
 
 import { CityWeatherDTO } from '../../dtos/cityWeatherDTO'
-import { kelvinToCelsius } from '../../utils/KelvinToCelsius'
 
 import { Ionicons } from '@expo/vector-icons'
 
@@ -36,7 +35,7 @@ export function ModalSelectCity({ isModalVisible, onRequestClose, addCityToConte
         <Container>
           <Content>
             <Text style={{ fontSize: 32, color: 'white' }}>{citySelected?.name}</Text>
-            <Text style={{ fontSize: 56, color: 'white', marginTop: 8}}>{kelvinToCelsius(citySelected?.main.temp!)}°</Text>
+            <Text style={{ fontSize: 56, color: 'white', marginTop: 8}}>{citySelected?.main.temp!}°</Text>
 
 
             <IconView>
@@ -47,8 +46,8 @@ export function ModalSelectCity({ isModalVisible, onRequestClose, addCityToConte
             <View style={{ borderTopColor: 'white', borderWidth: 1, width: '100%', marginTop: 16 }} />
 
             <TempView style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 16 }}>
-              <Text style={{ color: 'white', fontSize: 16 }}>Máx: {kelvinToCelsius(citySelected?.main.temp_max!)}°</Text>
-              <Text style={{ color: 'white', fontSize: 16 }}>Min: {kelvinToCelsius(citySelected?.main.temp_min!)}°</Text>
+              <Text style={{ color: 'white', fontSize: 16 }}>Máx: {citySelected?.main.temp_max!}°</Text>
+              <Text style={{ color: 'white', fontSize: 16 }}>Min: {citySelected?.main.temp_min!}°</Text>
             </TempView>
 
             <TouchableOpacity 

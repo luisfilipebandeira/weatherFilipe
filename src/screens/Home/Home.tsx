@@ -10,11 +10,9 @@ import {
   ListCitiesSelected
 } from './styles'
 
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import LottieView from 'lottie-react-native'
 import weatherLottie from '../../assets/weatherLottie.json'
-
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { CardCityWeather } from '../../components/CardCityWeather'
 import { GetWeatherOneCity } from '../../services/getWeatherOneCity'
@@ -23,13 +21,21 @@ import { CityWeatherDTO } from '../../dtos/cityWeatherDTO'
 import { useCity } from '../../hooks/cityContext';
 import { ModalSelectCity } from '../../components/ModalSelectCity';
 
+import { useNavigation } from '@react-navigation/native'
+import { AppStackParamList } from '../../routes/app.routes'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
+type props = NativeStackNavigationProp<AppStackParamList, 'Home'>
+
 export function Home(){
+  const navigation = useNavigation<props>()
+
   const [isInputFocused, setIsInputFocused] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const [loadingAnimation, setLoadingAnimation] = useState(false)
 
-  const { populateContext, cities, addCityToList } = useCity()
+  const { populateContext, cities, addCityToList, getWeatherCityDetail, clearData } = useCity()
   
   const [citySelected, setCitySelected] = useState<CityWeatherDTO>()
   const [cityInput, setCityInput] = useState('')
@@ -55,6 +61,14 @@ export function Home(){
     }, 3000)
   }
 
+  function navigationWeatherDetail(city: CityWeatherDTO) {
+    getWeatherCityDetail(city)
+    navigation.navigate('WeatherDetail')
+  }
+
+  navigation.addListener('focus', () => {
+    clearData()
+  })
 
   useEffect(() => {
     async function getCitiesInfo() {
@@ -90,18 +104,6 @@ export function Home(){
 
           <TextInputView>
             <Ionicons name="search" size={20} color={isInputFocused ? "#fff" : "#646464"} />
-            {/* <GooglePlacesAutocomplete 
-              placeholder='Busque uma cidade'
-              nearbyPlacesAPI='GooglePlacesSearch'
-              debounce={400}
-              onPress={(data, details = null) => {
-                console.log(data, details);
-              }}
-              query={{
-                key: 'AIzaSyCqQmXpFf5483a0vfO64qQzI9ZlofCKPc8',
-                language: 'en',
-              }}
-            /> */}
             <Input 
               placeholder='Busque uma cidade' 
               placeholderTextColor="#646464"
@@ -123,17 +125,19 @@ export function Home(){
                 {cities.length > 0 ? (
                   <>
                     {cities?.map((item) => (
-                      <View key={item.id} style={{marginBottom: 8}}>
+                      <TouchableOpacity key={item.id} style={{marginBottom: 8}} 
+                        onPress={() => navigationWeatherDetail(item)}
+                      >
                         <CardCityWeather  
                           cityName={item.name} 
                           country={item.sys.country} 
-                          condition={item.weather[0].main} 
+                          condition={item.weather[0].description} 
                           mainTemp={item.main.temp} 
                           maxTemp={item.main.temp_max} 
                           minTemp={item.main.temp_min}   
                           icon={item.weather[0].icon}             
                         />
-                      </View>
+                      </TouchableOpacity>
                     ))}
                   </>
                 ) : (

@@ -7,7 +7,7 @@ import { CityProvider } from './src/hooks/cityContext';
 
 export default function App() {
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#000'}}>
       <StatusBar style="light" />
       <CityProvider>
         <AppRoutes />

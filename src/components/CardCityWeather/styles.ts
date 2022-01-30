@@ -61,3 +61,4 @@ export const MinTemp = styled.Text`
   color: #fff;
   font-size: 10px;
 `
+

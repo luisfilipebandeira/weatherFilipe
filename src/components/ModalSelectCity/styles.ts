@@ -7,7 +7,7 @@ export const Container = styled.View`
 `
 
 export const Content = styled.View`
-  margin-top: 36px;
+  margin-top: 64px;
   align-items: center;
 `
 
@@ -26,7 +26,7 @@ export const TempView = styled.View`
 export const CloseModalView = styled.TouchableOpacity`
   position: absolute;
   right: 16px;
-  top: 16px;
+  top: 42px;
 
   z-index: 1;
 `
