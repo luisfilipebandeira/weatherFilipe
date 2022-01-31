@@ -13,6 +13,7 @@ import {
   TempView,
   CloseModalView
 } from './styles'
+import { useCity } from '../../hooks/cityContext'
 
 type Props = {
   isModalVisible: boolean
@@ -22,6 +23,8 @@ type Props = {
 }
 
 export function ModalSelectCity({ isModalVisible, onRequestClose, addCityToContext, citySelected }: Props){
+  const { selectedLang } = useCity()
+
   return (
     <Modal
         visible={isModalVisible}
@@ -40,7 +43,7 @@ export function ModalSelectCity({ isModalVisible, onRequestClose, addCityToConte
 
             <IconView>
               <Image source={{ uri: `http://openweathermap.org/img/wn/${citySelected?.weather[0].icon}@2x.png` }} style={{ height: 50, width: 50, marginLeft: -8 }} />
-              <Text style={{ color: 'white', fontSize: 16 }}>{citySelected?.weather[0].main}</Text>  
+              <Text style={{ color: 'white', fontSize: 16 }}>{citySelected?.weather[0].description}</Text>  
             </IconView>
 
             <View style={{ borderTopColor: 'white', borderWidth: 1, width: '100%', marginTop: 16 }} />
@@ -53,7 +56,7 @@ export function ModalSelectCity({ isModalVisible, onRequestClose, addCityToConte
             <TouchableOpacity 
               onPress={addCityToContext}
               style={{ height: 56, backgroundColor: '#03790d', width: '100%', borderRadius: 6, alignItems: 'center', justifyContent: 'center', marginTop: 32 }}>
-              <Text style={{ color: 'white', fontSize: 16 }} >Adicionar cidade na sua lista</Text>
+              <Text style={{ color: 'white', fontSize: 16 }}>{selectedLang === 'pt_br' ? 'Adicionar cidade na sua lista' : 'Add city in your list'}</Text>
             </TouchableOpacity>
           </Content>
         </Container>

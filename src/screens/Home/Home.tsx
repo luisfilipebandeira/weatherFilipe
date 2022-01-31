@@ -10,7 +10,7 @@ import {
   ListCitiesSelected
 } from './styles'
 
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, Image } from 'react-native'
 import LottieView from 'lottie-react-native'
 import weatherLottie from '../../assets/weatherLottie.json'
 
@@ -35,7 +35,7 @@ export function Home(){
 
   const [loadingAnimation, setLoadingAnimation] = useState(false)
 
-  const { populateContext, cities, addCityToList, getWeatherCityDetail, clearData } = useCity()
+  const { populateContext, cities, addCityToList, getWeatherCityDetail, clearData, selectedLang, setSelectedLang } = useCity()
   
   const [citySelected, setCitySelected] = useState<CityWeatherDTO>()
   const [cityInput, setCityInput] = useState('')
@@ -44,7 +44,7 @@ export function Home(){
 
   async function searchNewCity() {
     try {
-      const response = await GetWeatherOneCity({city: cityInput})
+      const response = await GetWeatherOneCity({city: cityInput, lang: selectedLang, units: selectedLang === 'pt_br' ? 'metric' : 'imperial'})
       setCitySelected(response)
       setIsModalVisible(true)
     } catch (err){
@@ -52,7 +52,7 @@ export function Home(){
     }
   }
 
-  function addCityToContext() {
+  async function addCityToContext() {
     addCityToList(citySelected!)
     setIsModalVisible(false)
     setLoadingAnimation(true)
@@ -83,7 +83,7 @@ export function Home(){
     }
     
     getCitiesInfo()
-  }, [])
+  }, [selectedLang])
 
   return (
     <Container>
@@ -94,18 +94,26 @@ export function Home(){
             style={{ height: 200 }}
             resizeMode="contain"
             loop
-            autoPlay
+            autoPlay={true}
             speed={2}
           />
         </View>
       ) : (
         <>
-          <Heading>Tempo</Heading>
+          <TouchableOpacity 
+            onPress={() => setSelectedLang(selectedLang === 'en' ? 'pt_br' : 'en')}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Heading>{selectedLang === 'pt_br' ? 'Clima' : 'Weather'}</Heading>
+            <Image source={{ uri: selectedLang === 'pt_br' ? 'https://ppgpsi-ufscar.com.br/media/mod_falang/images/pt_br.gif' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/255px-Flag_of_the_United_Kingdom_%283-5%29.svg.png' }} 
+              style={{ height: 30, width: 30, borderRadius: 15 }}
+            />
+          </TouchableOpacity>
 
           <TextInputView>
             <Ionicons name="search" size={20} color={isInputFocused ? "#fff" : "#646464"} />
             <Input 
-              placeholder='Busque uma cidade' 
+              placeholder={selectedLang === 'pt_br' ? 'Busque uma cidade' : 'Search for a city' }
               placeholderTextColor="#646464"
               selectionColor="#fff"
               onSubmitEditing={searchNewCity}
@@ -121,7 +129,7 @@ export function Home(){
                 <ActivityIndicator size="large" color="#fff" />
               </View>
             ) : (
-              <ScrollView showsVerticalScrollIndicator={false}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
                 {cities.length > 0 ? (
                   <>
                     {cities?.map((item) => (

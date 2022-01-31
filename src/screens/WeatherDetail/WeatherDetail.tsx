@@ -25,7 +25,8 @@ import {
   EventAlert,
   Start,
   End,
-  DescriptionAlert
+  DescriptionAlert,
+  GoBackButton
 } from './styles'
 
 import { format } from 'date-fns'
@@ -40,7 +41,7 @@ export function WeatherDetail(){
   const navigation = useNavigation<props>()
 
   const { currentCityWeekWeather, currentCity, removeCityFromList,
-  populateContext } = useCity()
+  populateContext, selectedLang } = useCity()
 
   function removeFromList() {
     removeCityFromList(currentCity!)
@@ -59,6 +60,10 @@ export function WeatherDetail(){
   return (
     <ScrollView style={{ backgroundColor: '#000' }}>
       <Container>
+        <GoBackButton onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={30} color="black" />
+        </GoBackButton>
+
         <Title>{currentCity?.name}</Title>
         <ConditionView>
           <TempText>{currentCity?.main.temp}° | </TempText>
@@ -87,7 +92,7 @@ export function WeatherDetail(){
               <BoxAlert>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons name='warning' size={35} color="#ff1515" />
-                  <Heading>Alertas</Heading>
+                  <Heading>{selectedLang === 'pt_br' ? 'Alertas' : 'Alerts'}</Heading>
                 </View>
 
                 {currentCityWeekWeather?.alerts!.map((item, index) => (
@@ -104,14 +109,14 @@ export function WeatherDetail(){
               </BoxAlert>
             </>
           ) : (
-            <Text>Esta cidade não possui nenhum alerta</Text>
+            <Text>{selectedLang === 'pt_br' ? 'Esta cidade não possui nenhum alerta' : 'This city has no alert'}</Text>
           )}
         </AlertView>
 
         <TouchableOpacity 
           onPress={removeFromList}
           style={{ height: 56, backgroundColor: '#b60909', width: '100%', borderRadius: 6, alignItems: 'center', justifyContent: 'center', marginTop: 32 }}>
-          <Text style={{ color: 'white', fontSize: 16 }} >Remover cidade da sua lista</Text>
+          <Text style={{ color: 'white', fontSize: 16 }} >{selectedLang === 'pt_br' ? 'Remover cidade da sua lista' : 'Remove city from your list'}</Text>
         </TouchableOpacity>
       </Container>
     </ScrollView>

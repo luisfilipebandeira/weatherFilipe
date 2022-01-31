@@ -115,3 +115,12 @@ export const DescriptionAlert = styled.Text`
   font-size: 16px;
   margin-top: 8px;
 `
+
+export const GoBackButton = styled.TouchableOpacity`
+  background-color: white;
+  position: absolute;
+  top: 56px;
+  left: 24px;
+
+  border-radius: 20px;
+`

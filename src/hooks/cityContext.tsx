@@ -16,6 +16,8 @@ interface CityContextData {
   currentCity: CityWeatherDTO | undefined,
   removeCityFromList(cityInfo: CityWeatherDTO): void
   clearData(): void
+  setSelectedLang(value: 'pt_br' | 'en'): void
+  selectedLang: ('pt_br' | 'en')
 }
 
 interface ProviderProps {
@@ -27,6 +29,8 @@ const CityContext = createContext<CityContextData>({} as CityContextData)
 export const CityProvider = ({children}: ProviderProps) => {
   const [cities, setCities] = useState<CityWeatherDTO[]>([])
   const [listOfCities, setListOfCities] = useState([])
+
+  const [selectedLang, setSelectedLang] = useState<'pt_br' | 'en'>('pt_br')
   
   const [currentCityWeekWeather, setCurrentCityWeekWeather] = useState<CityWeatherWeekDTO | undefined>()
   const [currentCity, setCurrentCity] = useState<CityWeatherDTO>()
@@ -37,7 +41,7 @@ export const CityProvider = ({children}: ProviderProps) => {
     const cityStored = await AsyncStorage.getItem('@cityWeather');
     const arrayCity = JSON.parse(cityStored!)
     for(let i = 0; i <= arrayCity?.length - 1; i++){
-      const response = await GetWeatherOneCity({city: arrayCity[i]!})
+      const response = await GetWeatherOneCity({city: arrayCity[i]!, lang: selectedLang, units: selectedLang === 'pt_br' ? 'metric' : 'imperial'})
       setListOfCities(
         produce((draft: string[]) => {
           draft.push(response.name)
@@ -64,12 +68,13 @@ export const CityProvider = ({children}: ProviderProps) => {
   async function removeCityFromList(cityInfo: CityWeatherDTO) {
     if(cityInfo !== null) {
       const newList = listOfCities.filter((item) => item !== cityInfo.name)
+      setCities(newList)
       await AsyncStorage.setItem('@cityWeather', JSON.stringify(newList))
     }
   }
 
   async function getWeatherCityDetail(item: CityWeatherDTO) {
-    const response = await GetWeatherWeek({lat: item.coord.lat, lon: item.coord.lon})
+    const response = await GetWeatherWeek({lat: item.coord.lat, lon: item.coord.lon, lang: selectedLang, units: selectedLang === 'pt_br' ? 'metric' : 'imperial'})
     setCurrentCityWeekWeather(response)
     setCurrentCity(item)
   }
@@ -89,7 +94,9 @@ export const CityProvider = ({children}: ProviderProps) => {
         getWeatherCityDetail,
         currentCity,
         removeCityFromList,
-        clearData
+        clearData,
+        selectedLang,
+        setSelectedLang
       }}
     >
       {children}
